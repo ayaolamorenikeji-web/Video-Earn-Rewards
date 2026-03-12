@@ -1,0 +1,15 @@
+packages:
+  "framer-motion": "For smooth interactive animations and page transitions"
+  "lucide-react": "Base icons for UI"
+  "clsx": "Utility for conditionally joining classNames"
+  "tailwind-merge": "Utility for merging tailwind classes"
+  "@hookform/resolvers": "Zod validation resolver for React Hook Form"
+  "react-hook-form": "Form state management"
+  "zod": "Schema validation"
+images:
+  - path: "artifacts/watch-earn/public/images/auth-bg.png"
+    description: "A clean modern abstract gradient background in deep indigo and soft purple, subtle light leaks, high quality professional 8k"
+    aspect_ratio: "16:9"
+  - path: "artifacts/watch-earn/public/images/coin.png"
+    description: "A beautifully rendered 3D gold coin with a star symbol, vibrant, transparent background, stylized and modern"
+    aspect_ratio: "1:1"

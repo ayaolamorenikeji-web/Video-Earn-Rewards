@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Watch Video & Earn"
+version = "1.0.0"
+id = "artifacts/watch-earn"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 18822
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/watch-earn run dev"
+
+[services.env]
+PORT = "18822"
+BASE_PATH = "/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/watch-earn", "run", "build"]
+publicDir = "artifacts/watch-earn/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"

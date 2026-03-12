@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Watch Video & Earn</title>
+    <meta name="description" content="Watch short videos and earn points you can cash out. Sign up free and start earning today." />
+    <!-- Open Graph -->
+    <meta property="og:title" content="Watch Video & Earn" />
+    <meta property="og:description" content="Watch videos, earn points, cash out rewards." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!--
+      MONETAG REWARDED VIDEO INTEGRATION
+      ====================================
+      To enable real ads:
+      1. Replace YOUR_MONETAG_TAG_ID below with your actual Monetag publisher tag ID.
+         You can find it in your Monetag dashboard under "Sites".
+      2. Go to Monetag dashboard > Sites > Add Site and whitelist your domain.
+      3. Uncomment the script tag below once you have your tag ID.
+      
+      The rewarded video is triggered by calling window.Monetag.showRewardedVideo()
+      with success and skip callbacks. Points are only awarded on the success callback.
+      
+      Example:
+        window.Monetag.showRewardedVideo({
+          onSuccess: () => { /* award points */ },
+          onSkip: () => { /* show "skipped" message */ }
+        });
+    -->
+    <!-- <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_MONETAG_TAG_ID" async></script> -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

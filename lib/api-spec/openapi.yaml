@@ -1,15 +1,18 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Watch Video & Earn API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: user
+    description: User operations
 paths:
   /healthz:
     get:
@@ -24,6 +27,169 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/signup:
+    post:
+      operationId: signup
+      tags: [auth]
+      summary: Create a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthCredentials"
+      responses:
+        "201":
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Invalid input or email already taken
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthCredentials"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /user/me:
+    get:
+      operationId: getMe
+      tags: [user]
+      summary: Get current user profile with points
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /user/earn:
+    post:
+      operationId: earnPoints
+      tags: [user]
+      summary: Award 10 points for completing a video
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Points awarded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /user/daily-bonus:
+    post:
+      operationId: claimDailyBonus
+      tags: [user]
+      summary: Claim daily bonus of 5 points (once per day)
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Bonus claimed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "409":
+          description: Already claimed today
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /user/cashout:
+    post:
+      operationId: requestCashout
+      tags: [user]
+      summary: Request a cash out
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Cashout request submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CashoutResponse"
+        "400":
+          description: Not enough points
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +200,74 @@ components:
       required:
         - status
 
+    AuthCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+        email:
+          type: string
+        points:
+          type: integer
+        token:
+          type: string
+      required:
+        - userId
+        - email
+        - points
+        - token
+
+    UserProfile:
+      type: object
+      properties:
+        userId:
+          type: string
+        email:
+          type: string
+        points:
+          type: integer
+        lastDailyBonus:
+          type: ["string", "null"]
+        canClaimDailyBonus:
+          type: boolean
+      required:
+        - userId
+        - email
+        - points
+        - lastDailyBonus
+        - canClaimDailyBonus
+
+    CashoutResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        pointsRedeemed:
+          type: integer
+        remainingPoints:
+          type: integer
+      required:
+        - message
+        - pointsRedeemed
+        - remainingPoints
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
