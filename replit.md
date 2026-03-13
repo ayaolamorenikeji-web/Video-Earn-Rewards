@@ -36,6 +36,22 @@ artifacts-monorepo/
 └── package.json            # Root package with hoisted devDeps
 ```
 
+## Render.com Deployment
+
+A `render.yaml` file at the project root configures deployment to [Render.com](https://render.com):
+
+- **Single web service** (`watch-earn-api`): builds the React frontend + Express API, serves both from one Node.js process
+- **PostgreSQL database** (`watch-earn-db`): free-tier Render Postgres, `DATABASE_URL` auto-injected
+- **Build command**: installs pnpm → runs OpenAPI codegen → builds frontend → bundles API
+- **Start command**: `node artifacts/api-server/dist/index.cjs`
+
+**To deploy:**
+1. Push this repo to GitHub/GitLab
+2. Go to Render dashboard → New → Blueprint → connect the repo
+3. Render reads `render.yaml` and creates everything automatically
+
+---
+
 ## Watch Video & Earn App
 
 A reward platform where users sign up, watch sponsored videos, and earn points to cash out.
