@@ -14,6 +14,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { WaterDrops } from "@/components/WaterDrops";
 
+const DropEarnLogo = ({ size = 24, gradientId = "dropGrad" }: { size?: number, gradientId?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2C9 5.5 4 11 4 15.5C4 19.6 7.6 23 12 23C16.4 23 20 19.6 20 15.5C20 11 15 5.5 12 2Z" fill={`url(#${gradientId})`}/>
+    <path d="M13.5 10L10 15H12.5L10.5 20L15 13H12L13.5 10Z" fill="white" opacity="0.9"/>
+    <defs>
+      <linearGradient id={gradientId} x1="12" y1="2" x2="12" y2="23" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00d2ff"/>
+        <stop offset="1" stopColor="#0055ff"/>
+      </linearGradient>
+    </defs>
+  </svg>
+);
+
+const DropEarnWordmark = ({ size = "text-[16px]" }: { size?: string }) => (
+  <span className={`font-bold tracking-tight ${size}`}>
+    <span className="text-white">Drop</span><span style={{ color: '#00d2ff' }}>Earn</span>
+  </span>
+);
+
 const authSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -40,10 +59,10 @@ export default function AuthPage() {
       let response;
       if (activeTab === "login") {
         response = await loginMutation.mutateAsync({ data });
-        toast({ title: "Welcome back!", description: "Successfully logged in." });
+        toast({ title: "Welcome back!", description: "Good to see you on DropEarn." });
       } else {
         response = await signupMutation.mutateAsync({ data });
-        toast({ title: "Account created!", description: "Welcome to Watch Video & Earn." });
+        toast({ title: "Account created!", description: "Welcome to DropEarn — start earning now!" });
       }
       setSession(response);
       setLocation("/dashboard");
@@ -65,22 +84,17 @@ export default function AuthPage() {
         <WaterDrops />
         
         <div className="relative z-10 flex flex-col items-center max-w-sm px-8">
-          <div className="relative mb-12">
+          <div className="relative mb-6">
             <div className="absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-[#00d2ff] to-[#0088ff] rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(0,210,255,0.4)] rotate-12 z-20">
               <span className="text-white font-display font-extrabold text-3xl">10</span>
             </div>
-            <div className="w-48 h-48 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center relative z-10">
-               <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C8 6 4 11 4 15C4 19.4183 7.58172 23 12 23C16.4183 23 20 19.4183 20 15C20 11 16 6 12 2Z" fill="url(#paint0_linear_hero)" />
-                <defs>
-                  <linearGradient id="paint0_linear_hero" x1="12" y1="2" x2="12" y2="23" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#00E6FF" />
-                    <stop offset="1" stopColor="#0088FF" />
-                  </linearGradient>
-                </defs>
-              </svg>
+            <div className="w-48 h-48 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center relative z-10 shadow-[0_0_50px_rgba(0,210,255,0.3)]">
+               <DropEarnLogo size={96} gradientId="dropGrad_leftpanel" />
             </div>
           </div>
+          
+          <h1 className="text-white font-bold text-[32px] tracking-tight mt-6 mb-3">Drop<span style={{color:'#00d2ff'}}>Earn</span></h1>
+          <p className="text-white/50 text-[15px] mb-10">Watch. Drop. Earn.</p>
 
           <div className="space-y-6 w-full">
             {[
@@ -107,13 +121,11 @@ export default function AuthPage() {
         
         <div className="w-full max-w-md bg-[rgba(5,10,25,0.95)] md:bg-transparent rounded-3xl p-8 md:p-10 relative z-10 shadow-2xl md:shadow-none border border-white/10 md:border-none">
           <div className="flex flex-col items-center mb-10 text-center">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#00d2ff33] to-[#0088ff33] border border-white/20 flex items-center justify-center mb-6 backdrop-blur-md">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C8 6 4 11 4 15C4 19.4183 7.58172 23 12 23C16.4183 23 20 19.4183 20 15C20 11 16 6 12 2Z" fill="#00d2ff" />
-              </svg>
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#00d2ff33] to-[#0088ff33] border border-white/20 flex items-center justify-center mb-6 backdrop-blur-md shadow-[0_0_15px_rgba(0,210,255,0.2)]">
+              <DropEarnLogo size={28} gradientId="dropGrad_auth" />
             </div>
-            <h1 className="text-[28px] font-display font-semibold text-white tracking-tight mb-2">Watch & Earn</h1>
-            <p className="text-[14px] text-white/40">Sign in to your account</p>
+            <h1 className="text-[28px] font-display font-semibold text-white tracking-tight mb-2"><DropEarnWordmark size="text-[28px]" /></h1>
+            <p className="text-[14px] text-white/40">Earn rewards for every second of your attention.</p>
           </div>
 
           <div className="flex border-b border-white/10 mb-8">

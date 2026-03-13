@@ -17,6 +17,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { WaterDrops } from "@/components/WaterDrops";
 
+const DropEarnLogo = ({ size = 24, gradientId = "dropGrad" }: { size?: number, gradientId?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2C9 5.5 4 11 4 15.5C4 19.6 7.6 23 12 23C16.4 23 20 19.6 20 15.5C20 11 15 5.5 12 2Z" fill={`url(#${gradientId})`}/>
+    <path d="M13.5 10L10 15H12.5L10.5 20L15 13H12L13.5 10Z" fill="white" opacity="0.9"/>
+    <defs>
+      <linearGradient id={gradientId} x1="12" y1="2" x2="12" y2="23" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#00d2ff"/>
+        <stop offset="1" stopColor="#0055ff"/>
+      </linearGradient>
+    </defs>
+  </svg>
+);
+
+const DropEarnWordmark = ({ size = "text-[16px]" }: { size?: string }) => (
+  <span className={`font-bold tracking-tight ${size}`}>
+    <span className="text-white">Drop</span><span style={{ color: '#00d2ff' }}>Earn</span>
+  </span>
+);
+
 declare global {
   interface Window {
     Monetag?: {
@@ -51,7 +70,7 @@ export default function DashboardPage() {
     request: { headers: authHeaders },
     mutation: {
       onSuccess: () => {
-        toast({ title: "+10 Points!", description: "Video completed successfully." });
+        toast({ title: "+10 DropCoins!", description: "Video completed. Points added to your balance." });
         queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
       },
       onError: () => {
@@ -64,7 +83,7 @@ export default function DashboardPage() {
     request: { headers: authHeaders },
     mutation: {
       onSuccess: () => {
-        toast({ title: "Daily Bonus Claimed!", description: "+5 bonus points added to your balance." });
+        toast({ title: "Daily Bonus!", description: "+5 DropCoins added to your balance." });
         queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
       },
       onError: (err: any) => {
@@ -134,10 +153,8 @@ export default function DashboardPage() {
       <header className="sticky top-0 z-40 glass-nav h-[64px]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C8 6 4 11 4 15C4 19.4183 7.58172 23 12 23C16.4183 23 20 19.4183 20 15C20 11 16 6 12 2Z" fill="#00d2ff" />
-            </svg>
-            <span className="font-semibold text-[16px]">Watch & Earn</span>
+            <DropEarnLogo size={26} gradientId="dropGrad_header" />
+            <DropEarnWordmark />
           </div>
           
           <div className="flex items-center gap-4">
@@ -187,15 +204,15 @@ export default function DashboardPage() {
           <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
             <div className="badge-pill bg-white/10 text-white/60">
               <span className="w-2 h-2 rounded-full bg-[#00d2ff]"></span>
-              +10 per video
+              +10 DC per video
             </div>
             <div className="badge-pill bg-white/10 text-white/60">
               <span className="w-2 h-2 rounded-full bg-[#a855f7]"></span>
-              5 daily bonus
+              +5 DC daily
             </div>
             <div className="badge-pill bg-white/10 text-white/60">
               <span className="w-2 h-2 rounded-full bg-[#10b981]"></span>
-              100 to cash out
+              100 DC to cash out
             </div>
           </div>
 
@@ -208,7 +225,7 @@ export default function DashboardPage() {
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center text-[12px] text-white/40">
                   <span>Progress to cashout</span>
-                  <span>{currentPoints}/100 pts</span>
+                  <span>{currentPoints}/100 DC</span>
                 </div>
                 <div className="progress-track w-full">
                   <div 
@@ -232,9 +249,9 @@ export default function DashboardPage() {
           >
             <div className="glass-card p-[40px] h-full flex flex-col relative overflow-hidden group">
               <div className="badge-pill bg-[#00d2ff]/10 text-[#00d2ff] border border-[#00d2ff]/20 text-xs self-start mb-4">
-                EARN POINTS
+                DROPEARN
               </div>
-              <h2 className="text-[32px] font-bold text-white mb-2">Watch & Earn</h2>
+              <h2 className="text-[32px] font-bold text-white mb-2">Watch Videos</h2>
               <p className="text-[15px] text-white/60 leading-[1.6] max-w-sm">
                 Complete sponsored video clips and earn 10 points instantly.
               </p>
@@ -284,7 +301,7 @@ export default function DashboardPage() {
                 <p className="text-[13px] text-white/50 mt-1">Free points every 24h</p>
                 
                 <div className="badge-pill bg-[#00d2ff]/20 text-[#00d2ff] self-start mt-2 mb-6">
-                  +5 pts
+                  +5 DC
                 </div>
 
                 <div className="mt-auto">
@@ -316,7 +333,7 @@ export default function DashboardPage() {
               <div className="glass-card p-[32px] h-full flex flex-col relative">
                 <div className="absolute top-[32px] right-[32px]">
                   <div className="badge-pill bg-white/10 text-white/60 text-[11px]">
-                    100 pts min
+                    100 DC min
                   </div>
                 </div>
 
@@ -351,7 +368,7 @@ export default function DashboardPage() {
         </div>
 
         <footer className="mt-[48px] text-center">
-          <p className="text-[12px] text-white/25">Points are non-transferable. Subject to terms.</p>
+          <p className="text-[12px] text-white/25">© 2025 DropEarn · Points are non-transferable · Subject to terms</p>
         </footer>
       </main>
     </div>
