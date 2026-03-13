@@ -37,56 +37,58 @@
 }
 
 :root {
-  --background: 210 20% 98%;
-  --foreground: 222 47% 11%;
+  /* Deep navy to dark teal underwater theme */
+  --background: 220 50% 10%; /* Very dark navy */
+  --foreground: 0 0% 100%;
   
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
-  --ring: 238 80% 60%;
+  --border: 190 50% 30%;
+  --input: 190 50% 30%;
+  --ring: 180 100% 40%; /* Bright cyan */
   
-  --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
+  --card: 220 50% 15%;
+  --card-foreground: 0 0% 100%;
   
-  --primary: 238 80% 60%;
-  --primary-foreground: 210 40% 98%;
+  --primary: 180 100% 40%; /* Bright cyan/teal */
+  --primary-foreground: 220 50% 10%;
   
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222 47% 11%;
+  --secondary: 195 80% 30%; /* Deep electric blue */
+  --secondary-foreground: 0 0% 100%;
   
-  --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%;
+  --muted: 210 40% 20%;
+  --muted-foreground: 190 30% 70%;
   
-  --accent: 35 90% 55%;
-  --accent-foreground: 210 40% 98%;
+  --accent: 190 90% 50%;
+  --accent-foreground: 0 0% 100%;
   
   --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
 }
 
 .dark {
-  --background: 222 47% 11%;
-  --foreground: 210 40% 98%;
+  /* Essentially the same as root for a permanent dark theme */
+  --background: 220 50% 10%;
+  --foreground: 0 0% 100%;
   
-  --border: 217 32% 17%;
-  --input: 217 32% 17%;
-  --ring: 238 80% 60%;
+  --border: 190 50% 30%;
+  --input: 190 50% 30%;
+  --ring: 180 100% 40%;
   
-  --card: 222 47% 11%;
-  --card-foreground: 210 40% 98%;
+  --card: 220 50% 15%;
+  --card-foreground: 0 0% 100%;
   
-  --primary: 238 80% 60%;
-  --primary-foreground: 210 40% 98%;
+  --primary: 180 100% 40%;
+  --primary-foreground: 220 50% 10%;
   
-  --secondary: 217 32% 17%;
-  --secondary-foreground: 210 40% 98%;
+  --secondary: 195 80% 30%;
+  --secondary-foreground: 0 0% 100%;
   
-  --muted: 217 32% 17%;
-  --muted-foreground: 215 20.2% 65.1%;
+  --muted: 210 40% 20%;
+  --muted-foreground: 190 30% 70%;
   
-  --accent: 35 90% 55%;
-  --accent-foreground: 210 40% 98%;
+  --accent: 190 90% 50%;
+  --accent-foreground: 0 0% 100%;
   
-  --destructive: 0 62.8% 30.6%;
+  --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
 }
 
@@ -103,4 +105,111 @@
     font-family: var(--font-display);
     @apply font-bold tracking-tight;
   }
+}
+
+/* Glassmorphism utility classes */
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px rgba(0, 150, 200, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+}
+
+.glass-nav {
+  background: rgba(10, 15, 30, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(0, 230, 255, 0.6);
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 230, 255, 0.2);
+}
+
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Water Drop Animation */
+.water-drop {
+  position: absolute;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: radial-gradient(ellipse at top, rgba(100, 220, 255, 0.3), transparent);
+  filter: blur(1px);
+  animation: float linear infinite;
+  pointer-events: none;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(110vh) scale(0.5);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-10vh) scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* Ripple effect for buttons */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 230, 255, 0.3);
+}
+
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  width: 10px;
+  height: 10px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.btn-ripple:active::after {
+  animation: ripple 0.5s ease-out;
+}
+
+.glow-text {
+  text-shadow: 0 0 20px rgba(0, 230, 255, 0.6);
+}
+
+.glow-icon {
+  filter: drop-shadow(0 0 8px rgba(0, 230, 255, 0.8));
 }
