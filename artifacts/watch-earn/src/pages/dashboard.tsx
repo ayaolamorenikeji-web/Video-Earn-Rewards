@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Gift, Wallet, LogOut, Loader2, Info } from "lucide-react";
+import { Play, Gift, Wallet, Loader2, Zap } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useAuth } from "@/lib/auth";
@@ -17,7 +17,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { WaterDrops } from "@/components/WaterDrops";
 
-// Add global declaration for Monetag mockup/integration
 declare global {
   interface Window {
     Monetag?: {
@@ -33,25 +32,21 @@ export default function DashboardPage() {
   const queryClient = useQueryClient();
   const [isWatching, setIsWatching] = useState(false);
 
-  // Redirect if not logged in
   if (!session) {
     setLocation("/");
     return null;
   }
 
-  // Common request headers for auth
   const authHeaders = { 'x-user-id': session.userId };
 
-  // Fetch real-time user profile
   const { data: profile, isLoading: isProfileLoading } = useGetMe({
     query: {
       enabled: !!session.userId,
-      refetchInterval: 10000, // keep points synced
+      refetchInterval: 10000,
     },
     request: { headers: authHeaders }
   });
 
-  // Mutations
   const earnMutation = useEarnPoints({
     request: { headers: authHeaders },
     mutation: {
@@ -118,7 +113,6 @@ export default function DashboardPage() {
         }
       });
     } else {
-      // Development Mock / Fallback
       toast({ title: "Ad Simulated (Dev Mode)", description: "Watching video... please wait." });
       setIsWatching(true);
       setTimeout(() => {
@@ -129,122 +123,152 @@ export default function DashboardPage() {
   };
 
   const currentPoints = profile?.points ?? session.points;
+  const userEmail = profile?.email || session.email || "";
+  const firstLetter = userEmail.charAt(0).toUpperCase();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0f1e] via-[#0d3b5e] to-[#0a7575] pb-12 relative overflow-x-hidden text-white font-sans">
       <WaterDrops />
       
       {/* Header */}
-      <header className="sticky top-0 z-40 glass-nav">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full border border-white/20 bg-white/10 flex items-center justify-center glow-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C8 6 4 11 4 15C4 19.4183 7.58172 23 12 23C16.4183 23 20 19.4183 20 15C20 11 16 6 12 2Z" fill="#00d2ff" />
-              </svg>
-            </div>
-            <span className="font-display font-bold text-xl tracking-wide hidden sm:block glow-text">Watch & Earn</span>
+      <header className="sticky top-0 z-40 glass-nav h-[64px]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C8 6 4 11 4 15C4 19.4183 7.58172 23 12 23C16.4183 23 20 19.4183 20 15C20 11 16 6 12 2Z" fill="#00d2ff" />
+            </svg>
+            <span className="font-semibold text-[16px]">Watch & Earn</span>
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="text-sm text-white/70 hidden sm:block">
-              {profile?.email || session.email}
+            <div className="flex items-center gap-3 hidden sm:flex">
+              <span className="text-[14px] text-white/70">{userEmail}</span>
             </div>
+            <div className="avatar-circle">{firstLetter}</div>
             <Button 
               variant="ghost" 
-              size="sm" 
               onClick={handleLogout} 
-              className="text-white hover:bg-white/10 hover:text-white rounded-lg border border-transparent transition-colors"
+              className="h-[36px] px-4 rounded-[12px] border border-white/10 text-sm hover:bg-white/10 hover:text-white transition-colors"
             >
-              <LogOut className="w-4 h-4 mr-2 opacity-80" />
               Logout
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 pt-16 relative z-10">
+      <main className="max-w-5xl mx-auto pt-[48px] relative z-10 px-6">
         {/* Balance Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-20 relative"
+          className="text-center flex flex-col items-center mb-16"
         >
-          {/* Subtle pulse glow behind points */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#00d2ff]/20 rounded-full blur-[60px] animate-pulse -z-10" />
-
-          <p className="text-white/60 font-medium uppercase tracking-[0.2em] text-sm mb-6">
-            Your Balance
-          </p>
-          <div className="flex items-center justify-center gap-6">
-            <img 
-              src={`${import.meta.env.BASE_URL}images/coin.png`} 
-              alt="Coins" 
-              className="w-16 h-16 sm:w-24 sm:h-24 drop-shadow-[0_0_15px_rgba(0,230,255,0.6)]"
-            />
-            <div className="text-7xl sm:text-9xl font-display font-extrabold tracking-tighter text-white glow-text">
-              {isProfileLoading ? (
-                <span className="animate-pulse opacity-50">...</span>
-              ) : (
-                <AnimatePresence mode="popLayout">
-                  <motion.span
-                    key={currentPoints}
-                    initial={{ opacity: 0, y: -20, filter: "blur(10px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    className="inline-block"
-                  >
-                    {currentPoints}
-                  </motion.span>
-                </AnimatePresence>
-              )}
+          <div className="section-label mb-4">TOTAL BALANCE</div>
+          <div 
+            className="text-[72px] font-extrabold text-white glow-text leading-none mb-6"
+            style={{ fontVariantNumeric: "tabular-nums" }}
+          >
+            {isProfileLoading ? (
+              <span className="animate-pulse opacity-50">...</span>
+            ) : (
+              <AnimatePresence mode="popLayout">
+                <motion.span
+                  key={currentPoints}
+                  initial={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  className="inline-block"
+                >
+                  {currentPoints}
+                </motion.span>
+              </AnimatePresence>
+            )}
+          </div>
+          
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+            <div className="badge-pill bg-white/10 text-white/60">
+              <span className="w-2 h-2 rounded-full bg-[#00d2ff]"></span>
+              +10 per video
             </div>
+            <div className="badge-pill bg-white/10 text-white/60">
+              <span className="w-2 h-2 rounded-full bg-[#a855f7]"></span>
+              5 daily bonus
+            </div>
+            <div className="badge-pill bg-white/10 text-white/60">
+              <span className="w-2 h-2 rounded-full bg-[#10b981]"></span>
+              100 to cash out
+            </div>
+          </div>
+
+          <div className="w-full max-w-[320px]">
+            {currentPoints >= 100 ? (
+              <div className="badge-pill bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30 py-2 px-4 text-[13px] w-full justify-center">
+                Ready to cash out! 🎉
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between items-center text-[12px] text-white/40">
+                  <span>Progress to cashout</span>
+                  <span>{currentPoints}/100 pts</span>
+                </div>
+                <div className="progress-track w-full">
+                  <div 
+                    className="progress-fill" 
+                    style={{ width: `${Math.min(100, (currentPoints / 100) * 100)}%` }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </motion.div>
 
         {/* Action Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Watch Video Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="md:col-span-3 lg:col-span-2"
+            className="lg:col-span-2"
           >
-            <div className="glass-card h-full p-8 md:p-10 flex flex-col justify-between relative overflow-hidden group">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#00d2ff] to-[#0088ff]" />
-              
-              <div className="relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-6">
-                  <Play className="w-6 h-6 text-[#00d2ff] ml-1" />
-                </div>
-                <h2 className="text-3xl font-bold font-display mb-3 text-white">Watch Videos</h2>
-                <p className="text-white/70 max-w-sm text-lg leading-relaxed">
-                  Dive into short sponsored clips and earn 10 points for every completed video.
-                </p>
+            <div className="glass-card p-[40px] h-full flex flex-col relative overflow-hidden group">
+              <div className="badge-pill bg-[#00d2ff]/10 text-[#00d2ff] border border-[#00d2ff]/20 text-xs self-start mb-4">
+                EARN POINTS
               </div>
+              <h2 className="text-[32px] font-bold text-white mb-2">Watch & Earn</h2>
+              <p className="text-[15px] text-white/60 leading-[1.6] max-w-sm">
+                Complete sponsored video clips and earn 10 points instantly.
+              </p>
               
-              <div className="mt-10 relative z-10">
+              <hr className="glass-divider my-[32px]" />
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mt-auto relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#00d2ff]/10 flex items-center justify-center">
+                    <Zap className="w-5 h-5 text-[#00d2ff]" />
+                  </div>
+                  <span className="text-[15px] font-medium text-white/80">10 points per video</span>
+                </div>
+                
                 <Button 
-                  size="lg" 
                   onClick={handleWatchVideo}
                   disabled={isWatching || earnMutation.isPending}
-                  className="w-full sm:w-auto bg-gradient-to-r from-[#00d2ff] to-[#0088ff] text-white border-none rounded-2xl h-16 px-10 text-xl font-semibold btn-ripple hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70"
+                  className="h-[48px] px-8 rounded-[12px] bg-gradient-to-r from-[#00d2ff] to-[#0088ff] text-white text-[15px] font-semibold border-none hover:shadow-[0_0_20px_rgba(0,210,255,0.4)] transition-all disabled:opacity-70"
                 >
                   {isWatching || earnMutation.isPending ? (
-                    <Loader2 className="w-6 h-6 mr-3 animate-spin" />
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   ) : (
-                    <Play className="w-6 h-6 mr-3 fill-white" />
+                    <Play className="w-5 h-5 mr-2 fill-white" />
                   )}
-                  {isWatching ? "Watching..." : "Watch & Earn +10"}
+                  Watch & Earn +10
                 </Button>
               </div>
 
-              {/* Decorative wave background shape */}
-              <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-[#00d2ff]/10 rounded-full blur-[40px] group-hover:bg-[#00d2ff]/20 transition-colors duration-700" />
+              {/* Decorative Watermark */}
+              <Play className="absolute -bottom-6 -right-6 w-[120px] h-[120px] text-white opacity-[0.04] pointer-events-none" />
             </div>
           </motion.div>
 
-          <div className="flex flex-col gap-8 md:col-span-3 lg:col-span-1">
+          <div className="lg:col-span-1 flex flex-col gap-6">
             {/* Daily Bonus Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -252,19 +276,33 @@ export default function DashboardPage() {
               transition={{ delay: 0.2 }}
               className="flex-1"
             >
-              <div className="glass-card p-8 h-full flex flex-col justify-center items-center text-center relative overflow-hidden">
-                <div className="w-14 h-14 rounded-2xl bg-[#00d2ff]/20 border border-[#00d2ff]/30 flex items-center justify-center mb-5 glow-icon">
-                  <Gift className="w-7 h-7 text-[#00d2ff]" />
+              <div className="glass-card p-[32px] h-full flex flex-col relative">
+                <div className="w-12 h-12 rounded-xl bg-[#00d2ff]/10 border border-[#00d2ff]/20 flex items-center justify-center mb-4">
+                  <Gift className="w-6 h-6 text-[#00d2ff]" />
                 </div>
-                <h3 className="font-bold text-xl mb-2 text-white">Daily Bonus</h3>
-                <p className="text-white/60 mb-8">Claim 5 free points every 24 hours.</p>
-                <Button 
-                  onClick={() => dailyBonusMutation.mutate()}
-                  disabled={dailyBonusMutation.isPending || profile?.canClaimDailyBonus === false}
-                  className="w-full rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 h-14 text-lg font-medium transition-all"
-                >
-                  {profile?.canClaimDailyBonus === false ? "Come back tomorrow" : "Claim +5 Points"}
-                </Button>
+                <h3 className="text-[16px] font-semibold text-white">Daily Bonus</h3>
+                <p className="text-[13px] text-white/50 mt-1">Free points every 24h</p>
+                
+                <div className="badge-pill bg-[#00d2ff]/20 text-[#00d2ff] self-start mt-2 mb-6">
+                  +5 pts
+                </div>
+
+                <div className="mt-auto">
+                  <Button 
+                    onClick={() => dailyBonusMutation.mutate()}
+                    disabled={dailyBonusMutation.isPending || profile?.canClaimDailyBonus === false}
+                    className={`w-full h-[44px] rounded-xl text-[14px] font-medium transition-all ${
+                      profile?.canClaimDailyBonus !== false
+                        ? "bg-gradient-to-r from-[#00d2ff] to-[#0088ff] text-white border-none hover:shadow-[0_0_15px_rgba(0,210,255,0.3)]"
+                        : "bg-white/5 text-white/40 border border-white/10"
+                    }`}
+                  >
+                    {profile?.canClaimDailyBonus === false ? "Come back tomorrow" : "Claim Bonus"}
+                  </Button>
+                  {profile?.canClaimDailyBonus === false && (
+                    <p className="text-center text-[11px] text-white/30 mt-3">Resets at midnight UTC</p>
+                  )}
+                </div>
               </div>
             </motion.div>
 
@@ -275,32 +313,46 @@ export default function DashboardPage() {
               transition={{ delay: 0.3 }}
               className="flex-1"
             >
-              <div className="glass-card p-8 h-full flex flex-col justify-center items-center text-center relative overflow-hidden">
-                {currentPoints < 100 && (
-                  <div className="absolute top-5 right-5 text-white/40">
-                    <Info className="w-5 h-5" />
+              <div className="glass-card p-[32px] h-full flex flex-col relative">
+                <div className="absolute top-[32px] right-[32px]">
+                  <div className="badge-pill bg-white/10 text-white/60 text-[11px]">
+                    100 pts min
                   </div>
-                )}
-                <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mb-5 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
-                  <Wallet className="w-7 h-7 text-emerald-400" />
                 </div>
-                <h3 className="font-bold text-xl mb-2 text-white">Cash Out</h3>
-                <p className="text-white/60 mb-8">Minimum 100 points required.</p>
-                <Button 
-                  onClick={() => cashoutMutation.mutate()}
-                  disabled={cashoutMutation.isPending || currentPoints < 100}
-                  className={`w-full rounded-xl h-14 text-lg font-medium transition-all ${
-                    currentPoints >= 100 
-                      ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-none hover:scale-[1.02] btn-ripple shadow-[0_0_15px_rgba(16,185,129,0.4)]" 
-                      : "bg-white/5 text-white/40 border border-white/10 cursor-not-allowed"
-                  }`}
-                >
-                  {cashoutMutation.isPending ? "Processing..." : "Request Cash Out"}
-                </Button>
+
+                <div className="w-12 h-12 rounded-xl bg-[#10b981]/10 border border-[#10b981]/20 flex items-center justify-center mb-4">
+                  <Wallet className="w-6 h-6 text-[#10b981]" />
+                </div>
+                <h3 className="text-[16px] font-semibold text-white">Cash Out</h3>
+                <p className="text-[13px] text-white/50 mt-1">Min. 100 points</p>
+                
+                <div className="mt-2 mb-6 h-[24px]">
+                  {currentPoints < 100 && (
+                    <span className="text-[12px] text-white/30">Need {100 - currentPoints} more points</span>
+                  )}
+                </div>
+
+                <div className="mt-auto">
+                  <Button 
+                    onClick={() => cashoutMutation.mutate()}
+                    disabled={cashoutMutation.isPending || currentPoints < 100}
+                    className={`w-full h-[44px] rounded-xl text-[14px] font-medium transition-all ${
+                      currentPoints >= 100 
+                        ? "bg-gradient-to-r from-[#10b981] to-[#059669] text-white border-none hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]" 
+                        : "bg-white/5 text-white/40 border border-white/10"
+                    }`}
+                  >
+                    {cashoutMutation.isPending ? "Processing..." : "Request Cash Out"}
+                  </Button>
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
+
+        <footer className="mt-[48px] text-center">
+          <p className="text-[12px] text-white/25">Points are non-transferable. Subject to terms.</p>
+        </footer>
       </main>
     </div>
   );

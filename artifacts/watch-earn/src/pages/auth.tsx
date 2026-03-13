@@ -12,7 +12,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WaterDrops } from "@/components/WaterDrops";
 
 const authSchema = z.object({
@@ -60,90 +59,127 @@ export default function AuthPage() {
   const isPending = loginMutation.isPending || signupMutation.isPending;
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center relative bg-gradient-to-br from-[#0a0f1e] via-[#0d3b5e] to-[#0a7575] overflow-hidden">
-      <WaterDrops />
-      
-      <div className="z-10 w-full max-w-md px-4 sm:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-        >
-          <div className="flex flex-col items-center mb-8 text-center">
-            <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-6 glow-icon backdrop-blur-md">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C8 6 4 11 4 15C4 19.4183 7.58172 23 12 23C16.4183 23 20 19.4183 20 15C20 11 16 6 12 2Z" fill="url(#paint0_linear)" />
-                <path d="M15 15C15 15 14.5 13 12 13C9.5 13 9 15 9 15" stroke="white" strokeWidth="2" strokeLinecap="round" />
+    <div className="min-h-screen w-full flex">
+      {/* Left Panel */}
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#0a0f1e] via-[#0d3b5e] to-[#0a7575] relative overflow-hidden items-center justify-center">
+        <WaterDrops />
+        
+        <div className="relative z-10 flex flex-col items-center max-w-sm px-8">
+          <div className="relative mb-12">
+            <div className="absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-[#00d2ff] to-[#0088ff] rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(0,210,255,0.4)] rotate-12 z-20">
+              <span className="text-white font-display font-extrabold text-3xl">10</span>
+            </div>
+            <div className="w-48 h-48 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center relative z-10">
+               <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C8 6 4 11 4 15C4 19.4183 7.58172 23 12 23C16.4183 23 20 19.4183 20 15C20 11 16 6 12 2Z" fill="url(#paint0_linear_hero)" />
                 <defs>
-                  <linearGradient id="paint0_linear" x1="12" y1="2" x2="12" y2="23" gradientUnits="userSpaceOnUse">
+                  <linearGradient id="paint0_linear_hero" x1="12" y1="2" x2="12" y2="23" gradientUnits="userSpaceOnUse">
                     <stop stopColor="#00E6FF" />
                     <stop offset="1" stopColor="#0088FF" />
                   </linearGradient>
                 </defs>
               </svg>
             </div>
-            <h1 className="text-4xl font-display font-bold text-white glow-text tracking-wider">Watch & Earn</h1>
-            <p className="text-white/60 mt-2">Dive in and get paid for your attention.</p>
           </div>
 
-          <div className="glass-card p-6 pb-8">
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
-              <div className="mb-6">
-                <TabsList className="grid w-full grid-cols-2 bg-white/10 p-1 rounded-xl">
-                  <TabsTrigger 
-                    value="login" 
-                    className="rounded-lg text-white data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-none"
-                  >
-                    Login
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="signup" 
-                    className="rounded-lg text-white data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-none"
-                  >
-                    Sign Up
-                  </TabsTrigger>
-                </TabsList>
+          <div className="space-y-6 w-full">
+            {[
+              { icon: "🎬", text: "Watch short videos" },
+              { icon: "✨", text: "Earn points instantly" },
+              { icon: "💸", text: "Cash out anytime" }
+            ].map((feature, i) => (
+              <div key={i} className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-sm">
+                <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-xl shadow-inner">
+                  {feature.icon}
+                </div>
+                <span className="text-white font-medium text-lg">{feature.text}</span>
               </div>
-
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-white/80 ml-1">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    className="glass-input rounded-xl h-12 px-4"
-                    {...form.register("email")}
-                  />
-                  {form.formState.errors.email && (
-                    <p className="text-sm text-red-300 ml-1">{form.formState.errors.email.message}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-white/80 ml-1">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    className="glass-input rounded-xl h-12 px-4"
-                    {...form.register("password")}
-                  />
-                  {form.formState.errors.password && (
-                    <p className="text-sm text-red-300 ml-1">{form.formState.errors.password.message}</p>
-                  )}
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full rounded-xl mt-6 h-12 text-md font-semibold bg-gradient-to-r from-[#00d2ff] to-[#0088ff] text-white border-none btn-ripple transition-transform hover:scale-[1.02] active:scale-[0.98]"
-                  disabled={isPending}
-                >
-                  {isPending ? "Please wait..." : activeTab === "login" ? "Sign In" : "Create Account"}
-                </Button>
-              </form>
-            </Tabs>
+            ))}
           </div>
-        </motion.div>
+        </div>
+      </div>
+
+      {/* Right Panel */}
+      <div className="w-full md:w-1/2 bg-[rgba(5,10,25,0.95)] flex items-center justify-center p-6 md:p-0 relative overflow-hidden">
+        {/* On mobile only, add background behind the form */}
+        <div className="md:hidden absolute inset-0 bg-gradient-to-br from-[#0a0f1e] via-[#0d3b5e] to-[#0a7575] z-0" />
+        <div className="md:hidden absolute inset-0 z-0"><WaterDrops /></div>
+        
+        <div className="w-full max-w-md bg-[rgba(5,10,25,0.95)] md:bg-transparent rounded-3xl p-8 md:p-10 relative z-10 shadow-2xl md:shadow-none border border-white/10 md:border-none">
+          <div className="flex flex-col items-center mb-10 text-center">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#00d2ff33] to-[#0088ff33] border border-white/20 flex items-center justify-center mb-6 backdrop-blur-md">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C8 6 4 11 4 15C4 19.4183 7.58172 23 12 23C16.4183 23 20 19.4183 20 15C20 11 16 6 12 2Z" fill="#00d2ff" />
+              </svg>
+            </div>
+            <h1 className="text-[28px] font-display font-semibold text-white tracking-tight mb-2">Watch & Earn</h1>
+            <p className="text-[14px] text-white/40">Sign in to your account</p>
+          </div>
+
+          <div className="flex border-b border-white/10 mb-8">
+            <button
+              type="button"
+              className={`flex-1 pb-3 text-sm font-medium transition-all ${activeTab === 'login' ? 'text-white border-b-2 border-[#00d2ff]' : 'text-white/40 hover:text-white/60'}`}
+              onClick={() => setActiveTab('login')}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              className={`flex-1 pb-3 text-sm font-medium transition-all ${activeTab === 'signup' ? 'text-white border-b-2 border-[#00d2ff]' : 'text-white/40 hover:text-white/60'}`}
+              onClick={() => setActiveTab('signup')}
+            >
+              Create Account
+            </button>
+          </div>
+
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <div className="flex flex-col">
+              <Label htmlFor="email" className="text-[13px] font-medium text-white/60 mb-2">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                className="h-12 rounded-xl bg-[rgba(255,255,255,0.06)] border border-white/10 text-white px-4 focus:border-[#00d2ff]/50 focus:ring-0 focus:shadow-[0_0_0_3px_rgba(0,210,255,0.1)] transition-all placeholder:text-white/30"
+                {...form.register("email")}
+              />
+              {form.formState.errors.email && (
+                <p className="text-[13px] text-red-400 mt-2">{form.formState.errors.email.message}</p>
+              )}
+            </div>
+            <div className="flex flex-col">
+              <Label htmlFor="password" className="text-[13px] font-medium text-white/60 mb-2">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                className="h-12 rounded-xl bg-[rgba(255,255,255,0.06)] border border-white/10 text-white px-4 focus:border-[#00d2ff]/50 focus:ring-0 focus:shadow-[0_0_0_3px_rgba(0,210,255,0.1)] transition-all placeholder:text-white/30"
+                {...form.register("password")}
+              />
+              {form.formState.errors.password && (
+                <p className="text-[13px] text-red-400 mt-2">{form.formState.errors.password.message}</p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-12 mt-2 rounded-xl bg-gradient-to-r from-[#00d2ff] to-[#0066ff] text-white font-semibold text-[15px] border-none hover:shadow-[0_0_20px_rgba(0,210,255,0.4)] transition-all"
+              disabled={isPending}
+            >
+              {isPending ? "Please wait..." : activeTab === "login" ? "Sign In" : "Create Account"}
+            </Button>
+            
+            <div className="text-center mt-6">
+              <button 
+                type="button"
+                onClick={() => setActiveTab(activeTab === 'login' ? 'signup' : 'login')}
+                className="text-[13px] text-white/50 hover:text-white transition-colors"
+              >
+                {activeTab === 'login' ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
