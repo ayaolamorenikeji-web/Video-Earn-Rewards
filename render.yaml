@@ -1,26 +1,3 @@
-# render.yaml — Render.com deployment configuration for DropEarn
-# Docs: https://render.com/docs/blueprint-spec
-#
-# This file defines:
-#   1. A PostgreSQL database
-#   2. A single web service that:
-#      - Builds both the React frontend and the Node.js API
-#      - Serves the API at /api/*
-#      - Serves the React SPA for all other routes
-#
-# HOW TO DEPLOY ON RENDER:
-# ─────────────────────────────────────────────────────────
-# 1. Push this repo to GitHub (or GitLab/Bitbucket).
-# 2. Go to https://dashboard.render.com → New → Blueprint
-# 3. Connect your repository and select this render.yaml.
-# 4. Render will create the database and web service automatically.
-# 5. After the first deploy, set your Monetag publisher tag ID:
-#    Dashboard → dropearn-api → Environment → Add Variable:
-#      Key: MONETAG_TAG_ID  Value: <your-tag-id>
-#    Then update artifacts/watch-earn/index.html
-#    with your actual Monetag script tag and redeploy.
-# ─────────────────────────────────────────────────────────
-
 databases:
   - name: dropearn-db
     databaseName: dropearn
@@ -35,38 +12,25 @@ services:
     region: oregon
     plan: free
 
-    # Build steps (run from the repository root):
-    #   1. Install all workspace dependencies
-    #   2. Generate typed API client from OpenAPI spec
-    #   3. Build the React frontend (outputs to artifacts/watch-earn/dist/public)
-    #   4. Bundle the Express API server (outputs to artifacts/api-server/dist/index.cjs)
     buildCommand: |
-      npm install -g pnpm &&
-      pnpm install --frozen-lockfile &&
+      npm install -g pnpm@9 &&
+      pnpm install --no-frozen-lockfile &&
       pnpm --filter @workspace/api-spec run codegen &&
       BASE_PATH=/ NODE_ENV=production pnpm --filter @workspace/watch-earn run build &&
       pnpm --filter @workspace/api-server run build
 
-    # Start the bundled Node.js API server
     startCommand: node artifacts/api-server/dist/index.cjs
 
-    # Health check — Render pings this to confirm the service is up
     healthCheckPath: /api/healthz
 
     envVars:
-      # Render automatically sets PORT; the API server reads it at startup
       - key: PORT
         value: 10000
 
       - key: NODE_ENV
         value: production
 
-      # DATABASE_URL is auto-injected from the database defined above
       - key: DATABASE_URL
         fromDatabase:
           name: dropearn-db
           property: connectionString
-
-      # ── Optional: Add your Monetag publisher tag ID here ──────────────
-      # - key: MONETAG_TAG_ID
-      #   value: YOUR_MONETAG_TAG_ID_HERE
